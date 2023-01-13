@@ -1,14 +1,9 @@
 package uk.ac.wlv.sentistrength;
 
 import java.io.BufferedReader;
-
-
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
@@ -19,12 +14,6 @@ import java.util.Locale;
 import uk.ac.wlv.utilities.FileOps;
 
 public class SentiStrength {
-	public File file ;
-	public FileOutputStream fos;
-	public OutputStreamWriter osw;
-	public File file2 ;
-	public FileOutputStream fos2;
-	public OutputStreamWriter osw2;
    Corpus c = new Corpus();
 
    public SentiStrength() {
@@ -32,12 +21,13 @@ public class SentiStrength {
    }
 
    public SentiStrength(String[] args) {
-	  this.c = new Corpus();
+      this.c = new Corpus();
       this.initialiseAndRun(args);
    }
 
    public static void main(String[] args) {
-	  SentiStrength classifier = new SentiStrength();
+      SentiStrength classifier = new SentiStrength();
+      
       classifier.initialiseAndRun(args);
    }
    
@@ -46,7 +36,7 @@ public class SentiStrength {
    }
 
    public void initialiseAndRun(String[] args) {
-	  Corpus c = this.c;
+      Corpus c = this.c;
       String sInputFile = "";
       String sInputFolder = "";
       String sTextToParse = "";
@@ -77,6 +67,7 @@ public class SentiStrength {
       for(i = 0; i < args.length; ++i) {
          bArgumentRecognised[i] = false;
       }
+      //String rooty="/Users/mac/Documents/workspace/SentiStrength/src/input/";
       for(i = 0; i < args.length; ++i) {
          try {
             if (args[i].equalsIgnoreCase("input")) {
@@ -326,7 +317,6 @@ public class SentiStrength {
 
          try {
             File f = new File(c.resources.sgSentiStrengthFolder);
-            System.out.println(c.resources.sgSentiStrengthFolder);
             if (!f.exists()) {
                System.out.println("Folder does not exist! " + c.resources.sgSentiStrengthFolder);
             }
@@ -622,6 +612,7 @@ public class SentiStrength {
                this.c.options.bgForceUTF8 = true;
                bArgumentRecognised[i] = true;
             }
+            
          } catch (NumberFormatException var5) {
             System.out.println("Error in argument for " + args[i] + ". Integer expected!");
             return;
@@ -652,29 +643,12 @@ public class SentiStrength {
       }
 
       if (!this.c.initialise()) {
-    	 System.out.println("Failed to initialise!");
+         System.out.println("Failed to initialise!");
       }
 
    }
 
    public String computeSentimentScores(String sentence) {
-	   try{
-		   if(file==null) {
-			   file = new File("/Users/sunkexin/Desktop/intermediated.txt");
-   		   }
-   		   if(!file.exists()){
-   			   file.createNewFile();
-   			   fos = new FileOutputStream(file);
-	       }else{
-	    	   fos = new FileOutputStream(file,true);
-	       }
-		   osw = new OutputStreamWriter(fos, "UTF-8");
-		   osw.write(sentence);
-		   osw.write("\r\n");
-		   osw.flush();
-	   }catch (Exception e) {
-	    	e.printStackTrace();
-	   }
       int iPos =1;
       int iNeg =1;
       int iTrinary =0;
@@ -686,7 +660,6 @@ public class SentiStrength {
       iTrinary = paragraph.getParagraphTrinarySentiment();
       iScale = paragraph.getParagraphScaleSentiment();
       String sRationale = "";
-      String result= "";
       if (this.c.options.bgEchoText) {
          sRationale = " " + sentence;
       }
@@ -694,31 +667,12 @@ public class SentiStrength {
       if (this.c.options.bgExplainClassification) {
          sRationale = " " + paragraph.getClassificationRationale();
       }
-      
+
       if (this.c.options.bgTrinaryMode) {
-    	  result=iPos + "	" + iNeg + "	" + iTrinary +"	"+ sRationale;
+         return iPos + " " + iNeg + " " + iTrinary + sRationale;
       } else {
-    	  result=this.c.options.bgScaleMode ? iPos + "	" + iNeg + "	" + iScale + sRationale : iPos + "	" + iNeg + "	"+sRationale;
+         return this.c.options.bgScaleMode ? iPos + " " + iNeg + " " + iScale + sRationale : iPos + " " + iNeg + sRationale;
       }
-      try{
-		   if(file2==null) {
-			   file2 = new File("/Users/sunkexin/Desktop/rationale.txt");
- 		   }
- 		   if(!file2.exists()){
- 			   file2.createNewFile();
- 			   fos2 = new FileOutputStream(file2);
-	       }else{
-	    	   fos2 = new FileOutputStream(file2,true);
-	       }
-		   osw2 = new OutputStreamWriter(fos2, "UTF-8");
-		   osw2.write(result);
-		   osw2.write("\r\n");
-		   osw2.flush();
-	   }catch (Exception e) {
-	    	e.printStackTrace();
-	   }
-     
-      return result;
    }
 
    private void runMachineLearning(Corpus c, String sInputFile, boolean bDoAll, int iMinImprovement, boolean bUseTotalDifference, int iIterations, int iMultiOptimisations, String sOutputFile) {
@@ -1110,7 +1064,8 @@ public class SentiStrength {
    }
 
    private void showBriefHelp() {
-      System.out.println("===" + this.c.options.sgProgramName + "Brief Help====");
+      System.out.println();
+      System.out.println("====" + this.c.options.sgProgramName + "Brief Help====");
       System.out.println("For most operations, a minimum of two parameters must be set");
       System.out.println("1) folder location for the linguistic files");
       System.out.println("   e.g., on Windows: C:/mike/Lexical_Data/");
@@ -1142,7 +1097,7 @@ public class SentiStrength {
 
    private void printCommandLineOptions() {
       System.out.println("====" + this.c.options.sgProgramName + " Command Line Options====");
-      System.out.println("==Source of data to be classified=");
+      System.out.println("=Source of data to be classified=");
       System.out.println(" text [text to process] OR");
       System.out.println(" input [filename] (each line of the file is classified SEPARATELY");
       System.out.println("        May have +ve 1st col., -ve 2nd col. in evaluation mode) OR");
